@@ -2,22 +2,25 @@ import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-// 기본 공연장 이미지
+// 기본 공연장 이미지 (로컬)
 import exampleImage from '../assets/Stageimg/DefaultStage.png';
 
-const StageMainCard = ({ image, name, location, tags }) => {
+const StageMainCard = ({ id, image, name, location, tags = [] }) => {
   const navigation = useNavigation();
+
+  // ✅ 이미지 URL이 있으면 네트워크에서 불러오고, 없으면 기본 이미지 사용
+  const imageSource = image ? { uri: image } : exampleImage;
 
   return (
     <TouchableOpacity
       onPress={() => {
-        console.log('🔗 Navigating to StageDetailScreen with:', { image, name, location, tags });
-        navigation.navigate('StageDetailScreen', { image, name, location, tags });
+        console.log('🔗 Navigating to StageDetailScreen with ID:', id);
+        navigation.navigate('StageDetailScreen', { stageId: id }); // ✅ ID 추가 전달
       }}
     >
       <View style={styles.cardContainer}>
         {/* 공연장 이미지 */}
-        <Image source={image || exampleImage} style={styles.image} />
+        <Image source={imageSource} style={styles.image} />
 
         {/* 공연장 이름 */}
         <Text style={styles.name}>{name}</Text>
@@ -25,14 +28,16 @@ const StageMainCard = ({ image, name, location, tags }) => {
         {/* 지역 정보 */}
         <Text style={styles.location}>{location}</Text>
 
-        {/* 태그 리스트 */}
-        <View style={styles.tagContainer}>
-          {tags?.map((tag, index) => (
-            <View key={index} style={styles.tag}>
-              <Text style={styles.tagText}>{tag}</Text>
-            </View>
-          ))}
-        </View>
+        {/* 태그 리스트 (현재는 빈 리스트 반환이므로 렌더링 X) */}
+        {tags.length > 0 && (
+          <View style={styles.tagContainer}>
+            {tags.map((tag, index) => (
+              <View key={index} style={styles.tag}>
+                <Text style={styles.tagText}>{tag}</Text>
+              </View>
+            ))}
+          </View>
+        )}
       </View>
     </TouchableOpacity>
   );

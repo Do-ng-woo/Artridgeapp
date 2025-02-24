@@ -1,14 +1,31 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Image, ScrollView, ActivityIndicator } from 'react-native';
 import DetailHeader from '../components/DetailHeader';
-import ArtistDetailList from '../components/ArtistDetailList'; // ✅ 아티스트 리스트 추가
+import ArtistDetailList from '../components/ArtistDetailList';
 import BannerBar from '../components/BannerBar';
-// 기본 이미지 설정
 import DefaultPoster from '../assets/Articleimg/Poster.jpg';
+import useArticleDetail from '../hooks/useArticleDetail';
 
 const ArticleDetailScreen = ({ route }) => {
-  // ✅ props로 데이터 전달받기
-  const { title, date, location, image, artists } = route.params || {};
+  const { articleId } = route.params || {};
+  const { data, loading, error } = useArticleDetail(articleId);
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+        <Text>로딩 중...</Text>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>데이터를 불러오는 중 오류 발생</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -17,18 +34,34 @@ const ArticleDetailScreen = ({ route }) => {
 
       <ScrollView contentContainerStyle={styles.contentContainer}>
         {/* 🎭 공연 포스터 */}
-        <Image source={image ? { uri: image } : DefaultPoster} style={styles.poster} />
+        <Image source={data.image ? { uri: data.image } : DefaultPoster} style={styles.poster} />
 
         {/* 📌 공연 정보 */}
         <View style={styles.textContainer}>
-          <Text style={styles.title}>{title}</Text>
-          <Text style={styles.date}>시간: <Text style={styles.boldText}>{date}</Text></Text>
-          <Text style={styles.location}>장소: <Text style={styles.boldText}>{location}</Text></Text>
+          <Text style={styles.title}>{data.title}</Text>
+          <Text style={styles.date}>시간: <Text style={styles.boldText}>{data.date}</Text></Text>
+          <Text style={styles.location}>장소: <Text style={styles.boldText}>{data.location}</Text></Text>
         </View>
 
         {/* 🎤 공연 아티스트 목록 */}
-        <ArtistDetailList artists={artists} /> 
-        <BannerBar/>
+        <ArtistDetailList artists={data.artists} /> 
+
+
+        {/* 💬 댓글 리스트 */}
+        <View>
+          <Text style={styles.commentTitle}>댓글</Text>
+          {data.comments.length > 0 ? (
+            data.comments.map((comment, index) => (
+              <View key={index} style={styles.commentBox}>
+                <Text style={styles.commentText}>{comment.content}</Text>
+              </View>
+            ))
+          ) : (
+            <Text style={styles.noCommentText}>아직 댓글이 없습니다.</Text>
+          )}
+        </View>
+
+        <BannerBar />
         <View style={styles.emptyspace}></View>
       </ScrollView>
     </View>
@@ -41,12 +74,26 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorText: {
+    fontSize: 18,
+    color: 'red',
+  },
   contentContainer: {
-    paddingBottom: 20, // 스크롤 시 여유 공간 추가
+    paddingBottom: 20,
   },
   poster: {
     width: '100%', 
-    height: 550, // ✅ 포스터 높이 고정
+    height: 550,
     resizeMode: 'cover',
   },
   textContainer: {
@@ -74,8 +121,36 @@ const styles = StyleSheet.create({
   boldText: {
     fontWeight: 'bold',
   },
-  emptyspace : {
-    height: 50, // ✅ 비어��는 공간 추가
+  linkText: {
+    fontSize: 16,
+    color: 'blue',
+    marginTop: 10,
+    paddingHorizontal: 16,
+  },
+  commentTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginLeft: 16,
+    marginTop: 20,
+  },
+  commentBox: {
+    backgroundColor: '#f5f5f5',
+    padding: 10,
+    marginHorizontal: 16,
+    marginTop: 10,
+    borderRadius: 8,
+  },
+  commentText: {
+    fontSize: 16,
+  },
+  noCommentText: {
+    fontSize: 16,
+    color: '#777',
+    marginLeft: 16,
+    marginTop: 10,
+  },
+  emptyspace: {
+    height: 50,
   },
 });
 

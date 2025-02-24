@@ -27,10 +27,12 @@ const CarouselContainer = ({ articles }) => {
   const renderItem = ({ item }) => (
     <View style={styles.cardWrapper}>
       <ArticleMainCard 
+        id={item.id}
         title={item.title}
         date={item.date}
         location={item.location}
         artists={item.artists}
+        image={item.image}
       />
     </View>
   );

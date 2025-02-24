@@ -1,15 +1,33 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, Image, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
 import DetailHeader from '../components/DetailHeader';
 import CarouselContainer from '../components/CarouselContainer';
-import { articles } from '../testdata/testdata1';
 import BannerBar from '../components/BannerBar';
+import useStageDetail from '../hooks/useStageDetail'; // ✅ 공연장 정보 훅 가져오기
 
 // 기본 이미지
 import DefaultStageImage from '../assets/Stageimg/DefaultStage.png';
 
 const StageDetailScreen = ({ route }) => {
-  const { name, location } = route.params || {};
+  const { stageId } = route.params || {};
+  const { data: stage, loading, error } = useStageDetail(stageId); // ✅ API 요청
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#FF5733" />
+        <Text style={styles.loadingText}>공연장 정보를 불러오는 중...</Text>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>오류 발생: {error}</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -18,20 +36,22 @@ const StageDetailScreen = ({ route }) => {
       <ScrollView contentContainerStyle={styles.contentContainer}>
         {/* 🎭 공연장 이미지 */}
         <View style={styles.imageWrapper}>
-          <Image source={DefaultStageImage} style={styles.stageImage} />
+          <Image 
+            source={stage.image ? { uri: stage.image } : DefaultStageImage} 
+            style={styles.stageImage} 
+          />
         </View>
 
         {/* 📌 공연장 정보 */}
         <View style={styles.textContainer}>
-          <Text style={styles.title}>{name}</Text>
-          <Text style={styles.location}>{location}</Text>
+          <Text style={styles.title}>{stage.name}</Text>
+          <Text style={styles.location}>{stage.location}</Text>
+          <Text style={styles.stats}>👍 좋아요 {stage.like} | 👀 조회수 {stage.views}</Text>
         </View>
+
+
+
         <BannerBar />
-        {/* 🔹 관련 공연 캐러셀 */}
-        <View style={styles.carouselWrapper}>
-            <Text style={styles.carouselTitle}>관련 공연</Text>
-          <CarouselContainer articles={articles} />
-        </View>
       </ScrollView>
     </View>
   );
@@ -57,7 +77,7 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     width: '100%',
-    alignItems: 'center', // ✅ 텍스트 중앙 정렬
+    alignItems: 'center',
     marginTop: 10,
   },
   title: {
@@ -73,6 +93,13 @@ const styles = StyleSheet.create({
     marginTop: 10,
     textAlign: 'center',
   },
+  stats: {
+    fontSize: 16,
+    fontWeight: '400',
+    color: '#666',
+    marginTop: 5,
+    textAlign: 'center',
+  },
   carouselTitle: {
     fontSize: 18,
     fontWeight: 'bold',
@@ -80,9 +107,28 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   carouselWrapper: {
-    width: '100%', // ✅ 가로 크기 강제 설정
-    marginTop: 20, // ✅ 여백 추가해서 자연스럽게 정렬
-    marginBottom: 50, //
+    width: '100%',
+    marginTop: 20,
+    marginBottom: 50,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#666',
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorText: {
+    fontSize: 16,
+    color: 'red',
   },
 });
 

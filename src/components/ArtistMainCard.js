@@ -1,11 +1,14 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity  } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-// 예제 이미지 (본인 경로에 맞게 수정)
+// 기본 이미지 (로컬)
 import exampleImage from '../assets/Artistimg/DefaultArtist.png';
 
 const ArtistMainCard = ({ image, name, tags }) => {
   const navigation = useNavigation();
+
+  // ✅ 이미지 URL이 있으면 네트워크에서 불러오고, 없으면 기본 이미지 사용
+  const imageSource = image ? { uri: image } : exampleImage;
 
   return (
     <TouchableOpacity 
@@ -17,16 +20,18 @@ const ArtistMainCard = ({ image, name, tags }) => {
       <View style={styles.cardContainer}>
         {/* 아티스트 이미지 & 태그 포함 */}
         <View style={styles.imageWrapper}>
-          <Image source={image || exampleImage} style={styles.image} />
+          <Image source={imageSource} style={styles.image} />
 
-          {/* 태그 리스트 (이미지 위에 위치) */}
-          <View style={styles.tagContainer}>
-            {tags.map((tag, index) => (
-              <View key={index} style={styles.tag}>
-                <Text style={styles.tagText}>{tag}</Text>
-              </View>
-            ))}
-          </View>
+          {/* 태그 리스트 (현재는 빈 리스트 반환이므로 렌더링 X) */}
+          {tags.length > 0 && (
+            <View style={styles.tagContainer}>
+              {tags.map((tag, index) => (
+                <View key={index} style={styles.tag}>
+                  <Text style={styles.tagText}>{tag}</Text>
+                </View>
+              ))}
+            </View>
+          )}
         </View>
 
         {/* 아티스트 이름 */}
@@ -53,8 +58,7 @@ const styles = StyleSheet.create({
   image: {
     width: 173,
     height: 173,
-    borderTopLeftRadius: 15,
-    borderTopRightRadius: 15,
+    borderRadius: 15,
     resizeMode: 'cover',
   },
   tagContainer: {

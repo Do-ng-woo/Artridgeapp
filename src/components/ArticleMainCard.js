@@ -1,10 +1,11 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image,TouchableOpacity  } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-import PosterImage from '../assets/Articleimg/Poster.jpg'; // ✅ 포스터 이미지 가져오기
+import DefaultPoster from '../assets/Articleimg/Poster.jpg'; // ✅ 로컬 기본 이미지
 
 const ArticleMainCard = ({ 
+  id,
   title = "공연 제목", 
   date = "YYYY.MM.DD", 
   location = "공연장", 
@@ -12,12 +13,17 @@ const ArticleMainCard = ({
   artists = [],
 }) => {
   const navigation = useNavigation();
-  
+
+  // ✅ 이미지 URL 설정 (기본 이미지 vs 네트워크 이미지)
+  const imageUrl = image ? { uri: image } : DefaultPoster;
+
+  console.log(`📸 ArticleMainCard에서 받은 이미지 URL (Title: ${image}):`, image);
+
   return (
     <TouchableOpacity 
       onPress={() => {
-        console.log('🔗 Navigating to ArticleDetailScreen with:', { title, date, location, image, artists});
-        navigation.navigate('ArticleDetailScreen', { title, date, location, image, artists });
+        console.log('🔗 Navigating to ArticleDetailScreen with ID:', id);
+        navigation.navigate('ArticleDetailScreen', { articleId: id }); // ✅ ID 추가 전달
       }}
     >
       <View style={styles.root}>
@@ -26,7 +32,7 @@ const ArticleMainCard = ({
 
         {/* ✅ 중앙 정렬된 포스터 */}
         <View style={styles.posterContainer}>
-          <Image source={PosterImage} style={styles.poster} />
+          <Image source={imageUrl} style={styles.poster} />
         </View>
 
         {/* ✅ 공연 정보 */}
@@ -53,7 +59,7 @@ const styles = StyleSheet.create({
     width: 267,
     height: 420,
     flexShrink: 0,
-    backgroundColor: '#2C2C2C', // ✅ Rectangle2 배경색 적용
+    backgroundColor: '#2C2C2C',
     borderRadius: 10,
     padding: 10,
     shadowColor: "#000",
@@ -64,13 +70,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   background: {
-    ...StyleSheet.absoluteFillObject, // ✅ 전체 배경 View (Rectangle2 대체)
+    ...StyleSheet.absoluteFillObject,
     backgroundColor: '#2C2C2C',
     borderRadius: 10,
   },
   posterContainer: {
     position: 'absolute',
-    top: 14, // ✅ 위에서 14px 떨어진 위치
+    top: 14,
     width: 183,
     height: 240,
     justifyContent: 'center',
@@ -79,16 +85,15 @@ const styles = StyleSheet.create({
   poster: {
     width: 180,
     height: 240,
-    borderRadius: 10, // ✅ 모서리 둥글게 설정 (선택 사항)
+    borderRadius: 10,
     resizeMode: 'cover',
   },
   title: {
-    marginTop: 250, // ✅ 포스터 아래에 여백 추가
+    marginTop: 250,
     width: 244,
     height: 50,
     flexShrink: 0,
     color: '#FFFFFF',
-    fontFamily: 'Inter',
     fontSize: 16,
     fontWeight: '700',
     textAlign: 'center',
@@ -119,7 +124,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
     borderColor: '#FFF',
-    backgroundColor: '#444', // ✅ 어두운 배경과 어울리도록 수정
+    backgroundColor: '#444',
   },
   artistText: {
     color: '#FFF',
