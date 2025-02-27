@@ -63,6 +63,7 @@ const HomeScreen = () => {
           {data.popular_artists.slice(0, 4).map((artist, index) => (
             <ArtistMainCard
               key={artist.id}
+              id={artist.id}
               image={artist.image}
               name={artist.name} // ✅ 아티스트 이름 반영
               tags={artist.tags} // ✅ 빈 리스트 유지

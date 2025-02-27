@@ -1,20 +1,24 @@
-import React from 'react';
-import { View, FlatList, StyleSheet, Dimensions } from 'react-native';
+import React, { useState } from 'react';
+import { View, FlatList, StyleSheet, Dimensions, ActivityIndicator } from 'react-native';
 import SearchHeader from '../components/SearchHeader';
-import ArticleFilterBar from '../components/ArticleFilterBar';
+import ArtistFilterBar from '../components/ArtistFilterBar'; // ✅ 아티스트 필터 바 컴포넌트
 import ArtistMainCard from '../components/ArtistMainCard'; // ✅ 아티스트 카드 컴포넌트
-import { artistData } from '../testdata/testdata1'; // ✅ 아티스트 데이터 불러오기
+import useArtistList from '../hooks/useArtistList'; // ✅ API 요청 훅
 
 const { width } = Dimensions.get('window'); // ✅ 화면 너비 가져오기
 
 const ArtistListScreen = () => {
+  const { artists, loading, fetchArtists, setFilter, nextPageUrl } = useArtistList(); // ✅ API 훅 사용
+  const [selectedFilter, setSelectedFilter] = useState("title"); // ✅ 현재 선택된 필터
+
   // ✅ 리스트 렌더링 함수
   const renderItem = ({ item }) => (
     <View style={styles.gridItem}>
       <ArtistMainCard 
+        id={item.id}
         image={item.image}
-        name={item.name}
-        tags={item.tags}
+        name={item.title} // ✅ title을 name으로 매핑
+        tags={[]} // ✅ sub_titles를 tags로 전달
       />
     </View>
   );
@@ -24,16 +28,29 @@ const ArtistListScreen = () => {
       {/* ✅ 검색 헤더 */}
       <SearchHeader placeholder="아티스트를 검색해주세요" />
 
-      {/* ✅ FlatList 내부에 필터 바 포함 */}
+      {/* ✅ 아티스트 리스트 */}
       <FlatList
-        data={artistData}
+        data={artists}
         renderItem={renderItem}
-        keyExtractor={(item, index) => index.toString()}
+        keyExtractor={(item) => item.id.toString()} // ✅ ID를 key로 사용
         numColumns={2} // ✅ 2열 배치
         columnWrapperStyle={styles.gridWrapper}
         contentContainerStyle={styles.contentContainer}
         showsVerticalScrollIndicator={false} // ✅ 스크롤바 숨김
-        ListHeaderComponent={<ArticleFilterBar />} // ✅ 필터 바를 리스트 헤더로 추가
+        onEndReached={() => {
+          if (nextPageUrl) fetchArtists(); // ✅ 다음 페이지 요청
+        }}
+        onEndReachedThreshold={0.5} // ✅ 50% 스크롤 시 다음 페이지 요청
+        ListHeaderComponent={
+          <ArtistFilterBar 
+            selectedFilter={selectedFilter} 
+            onFilterChange={(filter) => {
+              setSelectedFilter(filter);
+              setFilter(filter); // ✅ 필터 변경 시 API 요청
+            }}
+          />
+        } // ✅ 필터 바 추가
+        ListFooterComponent={loading ? <ActivityIndicator size="small" color="#888" /> : null} // ✅ 로딩 인디케이터
       />
     </View>
   );

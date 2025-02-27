@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
 import DetailHeader from '../components/DetailHeader';
-import CarouselContainer from '../components/CarouselContainer';
+import DetailCarouselContainer from '../components/DetailCarouselContainer';
 import BannerBar from '../components/BannerBar';
 import useStageDetail from '../hooks/useStageDetail'; // ✅ 공연장 정보 훅 가져오기
 
@@ -49,8 +49,12 @@ const StageDetailScreen = ({ route }) => {
           <Text style={styles.stats}>👍 좋아요 {stage.like} | 👀 조회수 {stage.views}</Text>
         </View>
 
-
-
+        <View style={styles.carouselWrapper}>
+          <Text style={styles.carouselTitle}>관련 공연</Text>
+          <DetailCarouselContainer articles={stage.articles} 
+                                  initialSlideIndex={stage.initial_slide_index || 0} // ✅ 존재하면 사용, 없으면 0
+          />
+        </View>
         <BannerBar />
       </ScrollView>
     </View>

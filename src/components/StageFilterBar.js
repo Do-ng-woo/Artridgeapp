@@ -2,12 +2,11 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
 const filters = [
-  { label: "최신순", value: "new" },
-  { label: "인기순", value: "popular" },
-  { label: "임박순", value: "upcoming" },
+  { label: "제목순", value: "title" },
+  { label: "인기순", value: "popularity" },
 ];
 
-const ArticleFilterBar = ({ selectedFilter, onFilterChange }) => {
+const StageFilterBar = ({ selectedFilter, onFilterChange }) => {
   if (!onFilterChange) {
     console.error("⚠️ onFilterChange 함수가 정의되지 않았습니다!");
     return null; // 🚨 필터 변경 함수가 없으면 아무것도 렌더링하지 않음
@@ -73,4 +72,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ArticleFilterBar;
+export default StageFilterBar;

@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, Image, FlatList, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, Image, FlatList, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 // 기본 아티스트 이미지
 import DefaultArtist from '../assets/Artistimg/DefaultArtist.png';
@@ -7,16 +8,25 @@ import DefaultArtist from '../assets/Artistimg/DefaultArtist.png';
 const { width } = Dimensions.get('window'); // 화면 너비 가져오기
 
 const ArtistDetailList = ({ artists = [] }) => {
+  const navigation = useNavigation();
+
   const renderItem = ({ item }) => (
-    <View style={styles.artistContainer}>
-      {/* 아티스트 이미지 */}
-      <Image 
-        source={item.image ? { uri: item.image } : DefaultArtist} 
-        style={styles.artistImage} 
-      />
-      {/* 아티스트 이름 */}
-      <Text style={styles.artistName}>{item.name || ""}</Text> 
-    </View>
+    <TouchableOpacity 
+      onPress={() => {
+        console.log(`🔗 Navigating to ArtistDetailScreen with ID: ${item.id}`);
+        navigation.navigate('ArtistDetailScreen', { artistId: item.id }); // ✅ ID 전달
+      }}
+    >
+      <View style={styles.artistContainer}>
+        {/* 아티스트 이미지 */}
+        <Image 
+          source={item.image ? { uri: item.image } : DefaultArtist} 
+          style={styles.artistImage} 
+        />
+        {/* 아티스트 이름 */}
+        <Text style={styles.artistName}>{item.name || "이름 없음"}</Text> 
+      </View>
+    </TouchableOpacity>
   );
 
   return (
@@ -70,6 +80,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: '#2C2C2C',
+    textAlign: 'center',
   },
   noArtists: {
     fontSize: 16,

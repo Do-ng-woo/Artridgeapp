@@ -1,21 +1,24 @@
-import React from 'react';
-import { View, FlatList, StyleSheet, Dimensions } from 'react-native';
+import React, { useState } from 'react';
+import { View, FlatList, StyleSheet, Dimensions, ActivityIndicator } from 'react-native';
 import SearchHeader from '../components/SearchHeader';
-import ArticleFilterBar from '../components/ArticleFilterBar';
+import StageFilterBar from '../components/StageFilterBar'; // ✅ 필터 바 수정
 import StageMainCard from '../components/StageMainCard'; // ✅ 공연장 카드 컴포넌트
-import { stageData } from '../testdata/testdata1'; // ✅ 공연장 데이터 불러오기
+import useStageList from '../hooks/useStageList'; // ✅ 공연장 데이터 훅
 
 const { width } = Dimensions.get('window'); // ✅ 화면 너비 가져오기
 
 const StageListScreen = () => {
+  const { stages, loading, fetchStages, setFilter, nextPageUrl } = useStageList();
+  const [selectedFilter, setSelectedFilter] = useState("title"); // ✅ 기본 필터 제목순
+
   // ✅ 리스트 렌더링 함수
   const renderItem = ({ item }) => (
     <View style={styles.gridItem}>
       <StageMainCard 
+        id={item.id}
         image={item.image}
-        name={item.name}
-        location={item.location}
-        tags={item.tags}
+        name={item.title} // ✅ API에서 title을 공연장 이름으로 사용
+        location={item.address}
       />
     </View>
   );
@@ -25,16 +28,29 @@ const StageListScreen = () => {
       {/* ✅ 검색 헤더 */}
       <SearchHeader placeholder="공연장을 검색해주세요" />
 
-      {/* ✅ FlatList 내부에 필터 바 포함 */}
+      {/* ✅ 공연장 리스트 */}
       <FlatList
-        data={stageData}
+        data={stages}
         renderItem={renderItem}
-        keyExtractor={(item, index) => index.toString()}
+        keyExtractor={(item) => item.id.toString()} // ✅ ID를 key로 사용
         numColumns={2} // ✅ 2열 배치
         columnWrapperStyle={styles.gridWrapper}
         contentContainerStyle={styles.contentContainer}
         showsVerticalScrollIndicator={false} // ✅ 스크롤바 숨김
-        ListHeaderComponent={<ArticleFilterBar />} // ✅ 필터 바를 리스트 헤더로 추가
+        onEndReached={() => {
+          if (nextPageUrl) fetchStages(); // ✅ 다음 페이지 요청
+        }}
+        onEndReachedThreshold={0.5} // ✅ 50% 스크롤 시 다음 페이지 요청
+        ListHeaderComponent={
+          <StageFilterBar 
+            selectedFilter={selectedFilter} 
+            onFilterChange={(filter) => {
+              setSelectedFilter(filter);
+              setFilter(filter); // ✅ 필터 변경 시 API 요청
+            }}
+          />
+        } // ✅ 필터 바 추가
+        ListFooterComponent={loading ? <ActivityIndicator size="small" color="#888" /> : null} // ✅ 로딩 인디케이터
       />
     </View>
   );

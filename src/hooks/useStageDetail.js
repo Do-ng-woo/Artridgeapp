@@ -33,6 +33,7 @@ const useStageDetail = (stageId) => {
           comments: response.data.comments,
           total_comments: response.data.total_comments,
           total_communities: response.data.total_communities,
+          initial_slide_index: response.data.initial_slide_index ?? 0,
           articles: response.data.articles.map(article => ({
             id: article.id,
             title: article.title,
@@ -47,7 +48,7 @@ const useStageDetail = (stageId) => {
             views: article.views,
             comment_count: article.comment_count,
             like: article.like,
-            link: article.link
+            link: article.link,
           }))
         };
 

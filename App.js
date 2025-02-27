@@ -23,6 +23,7 @@ import ArticleStackNavigator from './src/navigation/ArticleStackNavigator'; // �
 import HomeStackNavigator from './src/navigation/HomeStackNavigator';
 import StageStackNavigator from './src/navigation/StageStackNavigator';
 import ArtistStackNavigator from './src/navigation/ArtistStackNavigator';
+import ProfileStackNavigator from './src/navigation/ProfileStackNavigator';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -67,7 +68,7 @@ const BottomTabNavigator = () => {
       <Tab.Screen name="공연 정보" component={ArticleStackNavigator} />
       <Tab.Screen name="공연장" component={StageStackNavigator} />
       <Tab.Screen name="커뮤니티" component={ArtistStackNavigator} />
-      <Tab.Screen name="마이" component={ProfileScreen} />
+      <Tab.Screen name="마이" component={ProfileStackNavigator} />
     </Tab.Navigator>
   );
 };

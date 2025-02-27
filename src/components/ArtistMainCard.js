@@ -1,10 +1,11 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+
 // 기본 이미지 (로컬)
 import exampleImage from '../assets/Artistimg/DefaultArtist.png';
 
-const ArtistMainCard = ({ image, name, tags }) => {
+const ArtistMainCard = ({ id, image, name, tags }) => { // ✅ ID 추가
   const navigation = useNavigation();
 
   // ✅ 이미지 URL이 있으면 네트워크에서 불러오고, 없으면 기본 이미지 사용
@@ -13,8 +14,8 @@ const ArtistMainCard = ({ image, name, tags }) => {
   return (
     <TouchableOpacity 
       onPress={() => {
-        console.log(`🔗 Navigating to ArtistDetailScreen with: ${name}`);
-        navigation.navigate('ArtistDetailScreen', { name });
+        console.log(`🔗 Navigating to ArtistDetailScreen with ID: ${id}`);
+        navigation.navigate('ArtistDetailScreen', { artistId: id }); // ✅ ID 전달
       }}
     >
       <View style={styles.cardContainer}>
