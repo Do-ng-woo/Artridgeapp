@@ -5,17 +5,22 @@ import { View, Text, Image, StyleSheet } from 'react-native';
 import FillGrade from '../assets/svg/FillGrade.png';
 import EmptyGrade from '../assets/svg/EmptyGrade.png';
 
-// 공연 카드 컴포넌트
+// 🎭 공연 카드 컴포넌트
 const ArticleUserCard = ({ image, title, date, rating }) => {
+  // ✅ 이미지 URL 유효성 검사 후 처리
+  const imageSource = typeof image === 'string' && image.startsWith('http')
+    ? { uri: image }
+    : require('../assets/Profileimg/default_profile.jpg');
+
   return (
     <View style={styles.cardContainer}>
       {/* 공연 이미지 */}
-      <Image source={image} style={styles.image} />
+      <Image source={imageSource} style={styles.image} />
 
       {/* 공연 정보 */}
       <View style={styles.infoContainer}>
         <Text style={styles.title} numberOfLines={2}>{title}</Text>
-        <Text style={styles.date}>{date}</Text>
+        <Text style={styles.date}>{date || "날짜 미정"}</Text>
 
         {/* 별점 표시 */}
         <View style={styles.ratingContainer}>
@@ -37,7 +42,7 @@ const styles = StyleSheet.create({
     width: 173,
     height: 349,
     backgroundColor: '#2C2C2C',
-    borderRadius: 10,
+    borderRadius: 12, // ✅ 둥근 모서리 추가
     overflow: 'hidden',
     alignItems: 'center',
     marginBottom: 10,
@@ -45,11 +50,13 @@ const styles = StyleSheet.create({
   image: {
     width: 173,
     height: 241,
+    borderTopLeftRadius: 12, // ✅ 이미지도 둥근 모서리 적용
+    borderTopRightRadius: 12,
     resizeMode: 'cover',
   },
   infoContainer: {
     width: 165,
-    padding: 8,
+    padding: 5,
   },
   title: {
     fontSize: 16,
@@ -57,7 +64,7 @@ const styles = StyleSheet.create({
     color: '#FFF',
     textAlign: 'left',
     width: 165,
-    height: 45,
+    height: 45, // ✅ 높이 조정
   },
   date: {
     fontSize: 12,
@@ -70,7 +77,7 @@ const styles = StyleSheet.create({
   ratingContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: 5,
+    marginTop: 8,
   },
   starIcon: {
     width: 18,

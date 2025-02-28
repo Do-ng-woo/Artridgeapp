@@ -3,6 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { View, Text, Image } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
+import useEmailLogin from "./src/hooks/useEmailLogin"; // ✅ 로그인 상태 가져오기
 
 // 📌 기존 사용 아이콘
 import GridView from './src/assets/svg/Gridview.png';
@@ -11,19 +12,12 @@ import ChatIcon from './src/assets/svg/Chat.png';
 import ProfileIcon from './src/assets/svg/Person.png';
 import StageImage from './src/assets/svg/Stage.png';
 
-// 📌 화면 컴포넌트
-import HomeScreen from './src/screens/HomeScreen';
-import ArticleListScreen from './src/screens/ArticleListScreen';
-import StageListScreen from './src/screens/StageListScreen';
-import ProfileScreen from './src/screens/ProfileScreen';
-import CommunityScreen from './src/screens/CommunityScreen';
-import ArtistListScreen from './src/screens/ArtistListScreen';
-
 import ArticleStackNavigator from './src/navigation/ArticleStackNavigator'; // ✅ 추가
 import HomeStackNavigator from './src/navigation/HomeStackNavigator';
 import StageStackNavigator from './src/navigation/StageStackNavigator';
 import ArtistStackNavigator from './src/navigation/ArtistStackNavigator';
 import ProfileStackNavigator from './src/navigation/ProfileStackNavigator';
+
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -74,6 +68,12 @@ const BottomTabNavigator = () => {
 };
 
 export default function App() {
+  const { loading } = useEmailLogin(); // ✅ 로그인 상태 가져오기
+
+  if (loading) {
+    return null; // ✅ 로딩 중에는 아무것도 렌더링하지 않음 (스플래시 화면 추가 가능)
+  }
+
   return (
     <NavigationContainer>
       <BottomTabNavigator />
